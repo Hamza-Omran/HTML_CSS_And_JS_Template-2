@@ -55,24 +55,23 @@ let bullets = Array.from(document.querySelectorAll(".landing .overlay li"));
 // active
 let current = 1;
 
-prev.addEventListener("click", ()=>{
-    if(current == 0 ){
-        current = textContainer.length - 1
-    }
-    else{
-        current--;
-    }
-    changeText();
-})
+prev.addEventListener("click", Prev)
 
-next.addEventListener("click", ()=>{
-    if (current == textContainer.length - 1) {
-        current = 0;
-    } else {
-        current++;
-    }
+next.addEventListener("click", Next)
+
+function Next(){
+    current = (current + 1) % textContainer.length;
     changeText(current, textContainer, bullets);
-})
+}
+
+function Prev(){
+    current = (current - 1 + textContainer.length) % textContainer.length;
+    changeText(current, textContainer, bullets);
+}
+
+// Text Slider Swipe
+let textSliderContainer = document.querySelector(".landing .text-overlay");
+enableSwipe(textSliderContainer, Next, Prev);
 
 bullets.forEach((li, index) => {
     li.addEventListener("click", () => {
@@ -83,6 +82,29 @@ bullets.forEach((li, index) => {
 
 function changeText(curr, e, bullets){
     updateSlider(curr, e, bullets, ".landing .text-overlay .text", '.landing .overlay li');
+}
+
+// === For Mobiles ===
+
+function enableSwipe(container, onSwipeLeft, onSwipeRight) {
+    let startX = 0;
+
+    container.addEventListener("touchstart", (e) => {
+        startX = e.touches[0].clientX;
+    });
+
+    container.addEventListener("touchend", (e) => {
+        let endX = e.changedTouches[0].clientX;
+        let deltaX = endX - startX;
+
+        if (Math.abs(deltaX) > 50) {
+            if (deltaX < 0) {
+                onSwipeLeft();
+            } else {
+                onSwipeRight();
+            }
+        }
+    });
 }
 
 // === Skills Slider ===
@@ -119,6 +141,19 @@ function changeCol(currentIndex, elements, bullets){
         ".testimonials ul li"
     );
 }
+
+
+// Skills Slider Swipe
+const skillsSliderContainer = document.querySelector(".testimon-skills .testimonials");
+enableSwipe(skillsSliderContainer, () => {
+    currSkill = (currSkill + 1) % boxCol.length;
+    changeCol(currSkill, boxCol, skillsBullets);
+}, () => {
+    currSkill = (currSkill - 1 + boxCol.length) % boxCol.length;
+    changeCol(currSkill, boxCol, skillsBullets);
+});
+
+
 
 // === Portfolio Filter ===
 
